@@ -1,0 +1,2318 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#1a1a1a" />
+
+  <title>Kozinha Group — Conexão Gastronômica</title>
+  <meta name="description" content="Culinária Árabe, Café & Bakery e Sushi Bar. Encontre sua unidade e acesse o cardápio digital." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Kozinha Group — Conexão Gastronômica" />
+  <meta property="og:description" content="Culinária de verdade para quem tem pressa — sem abrir mão da excelência." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://i.imgur.com/BdCuQ67.png" />
+  <meta property="og:locale" content="pt_BR" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,600&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Lucide -->
+  <script defer src="https://unpkg.com/lucide@latest"></script>
+
+  <link rel="icon" href="https://i.imgur.com/VYM8d1c.png" />
+
+  <style>
+    :root{
+      --bg:#f4f7ea;
+      --text:#1a1a1a;
+      --muted:#6b6b6b;
+
+      --arabe:#b97b4e;
+      --cafe:#6a7152;
+      --sushi:#c14235;
+
+      --card:#ffffff;
+      --shadow: 0 18px 60px rgba(0,0,0,.20);
+      --shadow-soft: 0 12px 34px rgba(0,0,0,.14);
+
+      --radius-xl: 32px;
+      --radius-2xl: 44px;
+
+      --container: 1200px;
+
+      --ease: cubic-bezier(.2,.8,.2,1);
+    }
+
+    *{ box-sizing:border-box; }
+    html{ scroll-behavior:smooth; }
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x:hidden;
+    }
+    h1,h2,h3,h4{ font-family:"Playfair Display", serif; margin:0; }
+    a{ color:inherit; text-decoration:none; }
+    button, input, select, textarea{ font:inherit; }
+    ::selection{ background: var(--arabe); color:#fff; }
+
+    .container{
+      width: min(var(--container), calc(100% - 48px));
+      margin: 0 auto;
+    }
+
+    /* Ambient background shapes (diferente e bonito) */
+    .ambient{
+      position:fixed; inset:0;
+      z-index: 1;
+      pointer-events:none;
+      opacity:.75;
+      filter: blur(0px);
+    }
+    .blob{
+      position:absolute;
+      border-radius: 999px;
+      filter: blur(40px);
+      opacity:.40;
+      transform: translate3d(0,0,0);
+      animation: floaty 14s var(--ease) infinite alternate;
+    }
+    .blob.a{ width:520px; height:520px; background: rgba(185,123,78,.35); left:-160px; top: 20vh; animation-duration: 16s; }
+    .blob.b{ width:520px; height:520px; background: rgba(106,113,82,.30); right:-200px; top: 10vh; animation-duration: 19s; }
+    .blob.c{ width:480px; height:480px; background: rgba(193,66,53,.25); left: 20vw; bottom: -220px; animation-duration: 17s; }
+    @keyframes floaty{
+      from{ transform: translate3d(0,0,0) scale(1); }
+      to{ transform: translate3d(30px,-22px,0) scale(1.06); }
+    }
+
+    /* Grain overlay */
+    .grain{
+      position:fixed; inset:0;
+      pointer-events:none;
+      z-index: 3;
+      opacity:.32;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+    }
+
+    /* Reveal */
+    .reveal{
+      opacity:0;
+      transform: translateY(60px);
+      transition: opacity 900ms var(--ease), transform 900ms var(--ease);
+      will-change: opacity, transform;
+    }
+    .reveal.is-visible{ opacity:1; transform:none; }
+
+    @media (prefers-reduced-motion: reduce){
+      html{ scroll-behavior:auto; }
+      .reveal{ opacity:1; transform:none; transition:none; }
+      .kb img{ animation:none !important; }
+      .bounce{ animation:none !important; }
+      .blob{ animation:none !important; }
+    }
+
+    /* Loader */
+    .loader{
+      position:fixed; inset:0;
+      z-index: 999;
+      display:flex; align-items:center; justify-content:center;
+      background: var(--bg);
+      transition: opacity 400ms ease;
+    }
+    .loader.is-hidden{ opacity:0; pointer-events:none; }
+    .loader__panelWrap{ position:absolute; inset:0; display:flex; }
+    .loader__panel{ width:50%; height:100%; background: var(--text); }
+    .loader__panel.left{ animation: slideLeft 1500ms var(--ease) 1200ms forwards; }
+    .loader__panel.right{ animation: slideRight 1500ms var(--ease) 1200ms forwards; }
+    .loader__content{
+      position:relative; z-index:2;
+      display:flex; flex-direction:column; align-items:center;
+      animation: fadeOut 500ms ease-out 900ms forwards;
+    }
+    .loader__logo{ width:168px; height:168px; object-fit:contain; filter: brightness(0) invert(1); }
+    .loader__dots{ display:flex; gap:10px; margin-top:14px; }
+    .dot{ width:10px; height:10px; border-radius:999px; animation: dotBounce 700ms ease-in-out infinite; }
+    .dot:nth-child(1){ background:#e37635; animation-delay:0ms; }
+    .dot:nth-child(2){ background:var(--arabe); animation-delay:90ms; }
+    .dot:nth-child(3){ background:var(--cafe); animation-delay:180ms; }
+    @keyframes slideLeft{ to{ transform: translateX(-100%);} }
+    @keyframes slideRight{ to{ transform: translateX(100%);} }
+    @keyframes fadeOut{ to{ opacity:0;} }
+    @keyframes dotBounce{ 50%{ transform: translateY(-6px);} }
+
+    /* Navbar */
+    .nav{
+      position:fixed; top:0; left:0; width:100%;
+      z-index: 60;
+      padding: 26px 0;
+      transition: all 380ms ease;
+    }
+    .nav.is-scrolled{
+      padding: 14px 0;
+      background: rgba(244,247,234,.90);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(26,26,26,.06);
+    }
+    .nav__row{
+      display:flex; align-items:center; justify-content:space-between;
+      position:relative;
+      z-index: 10;
+    }
+    .brand{ display:flex; align-items:center; gap:10px; position:relative; z-index:70; }
+    .brand img{ height:46px; width:auto; transition: filter 300ms ease; filter: brightness(0) invert(1); }
+    .nav.is-scrolled .brand img{ filter: brightness(0); }
+
+    .nav__linksWrap{
+      display:flex; align-items:center; gap:22px;
+      color: rgba(255,255,255,.92);
+    }
+    .nav.is-scrolled .nav__linksWrap{ color: var(--text); }
+    .nav__links{
+      display:flex; align-items:center; gap:28px;
+      font-weight:900;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+      font-size:11px;
+    }
+    .nav__links a, .nav__links button{
+      background:none; border:none; color:inherit; cursor:pointer;
+      position:relative; padding:6px 0;
+    }
+    .nav__links a::after, .nav__links button::after{
+      content:""; position:absolute; left:0; bottom:-2px;
+      height:1px; width:0; background: currentColor;
+      transition: width 250ms ease;
+      opacity:.9;
+    }
+    .nav__links a:hover::after, .nav__links button:hover::after{ width:100%; }
+
+    .cta{
+      display:inline-flex; align-items:center; gap:10px;
+      padding: 12px 18px;
+      border-radius:999px;
+      border: 1px solid rgba(255,255,255,.20);
+      background: rgba(255,255,255,.10);
+      color: #fff;
+      box-shadow: 0 16px 50px rgba(0,0,0,.22);
+      transition: transform 250ms ease, background 250ms ease, border-color 250ms ease;
+      cursor:pointer;
+      font-weight:900;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      font-size:11px;
+      position:relative;
+      overflow:hidden;
+    }
+    .cta::before{
+      content:"";
+      position:absolute;
+      inset:-60px;
+      background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(255,255,255,.22), transparent 55%);
+      opacity:0;
+      transition: opacity 200ms ease;
+    }
+    .cta:hover{ transform: translateY(-2px); background: rgba(255,255,255,.16); }
+    .cta:hover::before{ opacity:1; }
+
+    .nav.is-scrolled .cta{
+      background: var(--text);
+      color:#fff;
+      border-color: transparent;
+      box-shadow: 0 18px 60px rgba(0,0,0,.20);
+    }
+    .nav.is-scrolled .cta:hover{ background: var(--arabe); }
+
+    .hamburger{
+      display:none;
+      background:none; border:none; cursor:pointer;
+      padding:10px; border-radius:12px;
+      color: rgba(255,255,255,.92);
+      position:relative; z-index:70;
+    }
+    .nav.is-scrolled .hamburger{ color: var(--text); }
+
+    @media (max-width: 920px){
+      .nav__linksWrap{ display:none; }
+      .hamburger{ display:inline-flex; }
+    }
+
+    /* Mobile menu */
+    .mnav{
+      position:fixed; inset:0;
+      z-index:55;
+      background: var(--bg);
+      display:none;
+      padding: 96px 24px 40px;
+    }
+    .mnav.is-open{ display:block; animation: fadeIn 220ms ease; }
+    @keyframes fadeIn{ from{opacity:0} to{opacity:1} }
+
+    .mnav__links{
+      display:flex; flex-direction:column; gap:18px;
+      align-items:center; text-align:center;
+      font-family:"Playfair Display", serif;
+      font-size: 38px;
+    }
+    .mnav__links a, .mnav__links button{
+      background:none; border:none; cursor:pointer; color: var(--text);
+    }
+    .mnav__cta{ margin-top: 26px; display:flex; justify-content:center; }
+    .mnav__cta button{
+      background:none; border:none; cursor:pointer;
+      font-weight:900; letter-spacing:.22em; text-transform:uppercase;
+      font-size: 12px; color: var(--arabe);
+      border-bottom: 2px solid var(--arabe);
+      padding-bottom:6px;
+    }
+
+    /* Hero */
+    main{ position:relative; z-index:5; }
+    .hero{
+      position:relative;
+      min-height: 760px;
+      height: 100vh;
+      background: var(--text);
+      overflow:hidden;
+      display:flex; align-items:center; justify-content:center;
+      padding-top: 90px;
+      isolation:isolate;
+    }
+    .hero__bg{ position:absolute; inset:0; z-index:0; }
+    .hero__bg img{
+      width:100%; height:100%;
+      object-fit:cover;
+      transform: scale(1.12);
+      filter: saturate(1.03) contrast(1.03);
+    }
+    .kb img{ animation: kenBurns 16s ease-in-out infinite alternate; }
+    @keyframes kenBurns{ from{ transform: scale(1.12) translateY(0);} to{ transform: scale(1.18) translateY(-18px);} }
+    .hero__overlay{
+      position:absolute; inset:0;
+      background: linear-gradient(to bottom, rgba(0,0,0,.86), rgba(0,0,0,.42), #1a1a1a);
+    }
+    .hero__glow{
+      position:absolute; inset:0;
+      background: radial-gradient(circle at 50% 35%, rgba(185,123,78,.28), transparent 55%);
+      mix-blend-mode: screen;
+      opacity:.65;
+      pointer-events:none;
+    }
+
+    .hero__content{
+      position:relative; z-index:2;
+      text-align:center;
+      color: #fff;
+      max-width: 1020px;
+      padding: 0 18px;
+    }
+    .pill{
+      display:inline-flex; align-items:center; gap:10px;
+      border: 1px solid rgba(255,255,255,.26);
+      background: rgba(255,255,255,.06);
+      backdrop-filter: blur(10px);
+      border-radius:999px;
+      padding: 10px 16px;
+      font-weight:900;
+      letter-spacing:.30em;
+      text-transform:uppercase;
+      font-size:10px;
+      color: rgba(255,255,255,.90);
+      box-shadow: 0 16px 50px rgba(0,0,0,.18);
+    }
+    .hero h1{
+      margin-top: 22px;
+      font-size: clamp(52px, 6.8vw, 122px);
+      line-height: .88;
+      color: var(--bg);
+      text-shadow: 0 26px 80px rgba(0,0,0,.55);
+      letter-spacing: -0.02em;
+    }
+    .hero h1 em{ color: var(--arabe); font-style: italic; }
+    .hero p{
+      margin: 18px auto 0;
+      max-width: 760px;
+      font-size: clamp(16px, 1.6vw, 20px);
+      line-height: 1.75;
+      color: rgba(255,255,255,.78);
+      font-weight: 300;
+    }
+
+    .hero__actions{
+      margin-top: 34px;
+      display:flex; gap:14px; justify-content:center; flex-wrap:wrap;
+    }
+
+    .btn{
+      border:none; cursor:pointer;
+      border-radius: 999px;
+      padding: 16px 22px;
+      font-weight: 900;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      font-size: 12px;
+      transition: transform 220ms ease, box-shadow 220ms ease, background 220ms ease, color 220ms ease, border-color 220ms ease;
+      display:inline-flex; align-items:center; gap:10px;
+      user-select:none;
+      position:relative;
+      overflow:hidden;
+    }
+    .btn::before{
+      content:"";
+      position:absolute;
+      inset:-60px;
+      background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(255,255,255,.22), transparent 55%);
+      opacity:0;
+      transition: opacity 200ms ease;
+    }
+    .btn:hover::before{ opacity:1; }
+
+    .btn.primary{
+      background: var(--arabe);
+      color:#fff;
+      box-shadow: 0 0 46px rgba(185,123,78,.35);
+    }
+    .btn.primary:hover{ transform: translateY(-2px) scale(1.01); background: #a06840; }
+    .btn.ghost{
+      background: rgba(255,255,255,.08);
+      color:#fff;
+      border: 1px solid rgba(255,255,255,.28);
+      backdrop-filter: blur(10px);
+    }
+    .btn.ghost:hover{
+      background: #fff; color: var(--text);
+      border-color: transparent; transform: translateY(-2px);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .scrollHint{
+      position:absolute; left:50%; bottom: 22px;
+      transform: translateX(-50%);
+      color: rgba(255,255,255,.55);
+      z-index:2;
+    }
+    .bounce{ animation: bounce 1200ms ease-in-out infinite; }
+    @keyframes bounce{ 50%{ transform: translateX(-50%) translateY(8px);} }
+
+    /* Sections */
+    .section{ padding: 110px 0; position:relative; overflow:hidden; }
+    .pattern{
+      background-image: radial-gradient(rgba(255,255,255,0.12) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    .split{
+      display:grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 64px;
+      align-items:center;
+    }
+    @media (max-width: 980px){
+      .section{ padding: 90px 0; }
+      .split{ grid-template-columns: 1fr; gap: 38px; }
+    }
+
+    .tag{
+      display:inline-flex; align-items:center; gap:10px;
+      font-weight: 900;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+      font-size:11px;
+      opacity:.88;
+    }
+    .tag .line{ width:34px; height:1px; background: rgba(255,255,255,.55); }
+    .section h2{
+      margin-top: 14px;
+      font-size: clamp(44px, 4.2vw, 84px);
+      line-height: .92;
+    }
+    .section p{
+      margin-top: 18px;
+      max-width: 580px;
+      line-height:1.85;
+      font-weight: 300;
+      font-size: 18px;
+      opacity:.88;
+    }
+
+    .media{
+      position:relative;
+      border-radius: var(--radius-2xl);
+      overflow:hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,.14);
+      transform: translateZ(0);
+      isolation:isolate;
+    }
+    .media img{
+      width:100%; height: 560px;
+      object-fit:cover;
+      display:block;
+      transition: transform 900ms var(--ease), filter 900ms var(--ease);
+      filter: grayscale(.35);
+    }
+    .media::after{
+      content:"";
+      position:absolute; inset:0;
+      background: radial-gradient(circle at 30% 25%, rgba(255,255,255,.18), transparent 50%);
+      opacity: .0;
+      transition: opacity 300ms ease;
+      pointer-events:none;
+    }
+    .media:hover img{ transform: scale(1.03); filter: grayscale(0); }
+    .media:hover::after{ opacity:.55; }
+
+    @media (max-width: 980px){ .media img{ height: 420px; } }
+
+    .bento{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 12px;
+      margin-top: 24px;
+      max-width: 560px;
+    }
+    .mini{
+      background: rgba(0,0,0,.10);
+      border: 1px solid rgba(255,255,255,.10);
+      backdrop-filter: blur(8px);
+      border-radius: 18px;
+      padding: 16px 16px;
+    }
+    .mini h4{
+      font-family: Inter, sans-serif;
+      font-size: 18px;
+      margin:0;
+      font-weight: 900;
+      letter-spacing:.02em;
+    }
+    .mini p{
+      margin-top: 6px;
+      font-size: 12px;
+      opacity:.78;
+      line-height: 1.55;
+    }
+
+    .list{ margin-top: 22px; display:flex; flex-direction:column; gap: 12px; max-width: 580px; }
+    .li{ display:flex; align-items:center; gap:10px; opacity:.88; font-weight: 400; }
+    .li svg{ width:18px; height:18px; }
+
+    /* Extra sections */
+    .alt{
+      background: linear-gradient(180deg, rgba(26,26,26,0.04), transparent);
+    }
+    .headline{
+      text-align:center;
+      margin-bottom: 34px;
+    }
+    .headline h2{
+      font-size: clamp(34px, 3.6vw, 64px);
+      line-height:1.0;
+    }
+    .headline p{ margin: 12px auto 0; max-width: 720px; color: var(--muted); }
+
+    /* Why / Bento big */
+    .bentoBig{
+      display:grid;
+      grid-template-columns: 1.2fr 1fr 1fr;
+      gap: 14px;
+      align-items:stretch;
+    }
+    @media (max-width: 980px){
+      .bentoBig{ grid-template-columns: 1fr; }
+    }
+    .tile{
+      background: #fff;
+      border: 1px solid rgba(26,26,26,.08);
+      border-radius: 26px;
+      padding: 22px;
+      box-shadow: 0 12px 34px rgba(0,0,0,.08);
+      position:relative;
+      overflow:hidden;
+      transition: transform 220ms ease, box-shadow 220ms ease;
+    }
+    .tile:hover{ transform: translateY(-2px); box-shadow: 0 18px 60px rgba(0,0,0,.12); }
+    .tile .k{
+      display:inline-flex; align-items:center; gap:8px;
+      font-weight: 900;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+      font-size: 11px;
+      color:#7c7c7c;
+    }
+    .tile h3{
+      margin-top: 10px;
+      font-size: 28px;
+      line-height:1.05;
+    }
+    .tile p{
+      margin-top: 10px;
+      color:#666;
+      line-height:1.75;
+      font-weight:300;
+      font-size: 15px;
+    }
+    .tile .chipRow{
+      margin-top: 14px;
+      display:flex; flex-wrap:wrap;
+      gap: 8px;
+    }
+    .chip{
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      border: 1px solid rgba(26,26,26,.10);
+      color:#222;
+      background: rgba(244,247,234,.55);
+    }
+    .tileGlow{
+      position:absolute; inset:-80px;
+      background: radial-gradient(circle at 35% 25%, rgba(185,123,78,.22), transparent 55%);
+      opacity:.8;
+      pointer-events:none;
+      transform: rotate(12deg);
+    }
+
+    /* Popular items cards */
+    .cards3{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 14px;
+    }
+    @media (max-width: 980px){ .cards3{ grid-template-columns: 1fr; } }
+    .foodCard{
+      background:#fff;
+      border: 1px solid rgba(26,26,26,.08);
+      border-radius: 28px;
+      overflow:hidden;
+      box-shadow: 0 12px 34px rgba(0,0,0,.08);
+      transition: transform 220ms ease, box-shadow 220ms ease;
+    }
+    .foodCard:hover{ transform: translateY(-2px); box-shadow: 0 18px 60px rgba(0,0,0,.12); }
+    .foodImg{
+      height: 210px;
+      background:#eee;
+      position:relative;
+      overflow:hidden;
+    }
+    .foodImg img{ width:100%; height:100%; object-fit:cover; display:block; transform: scale(1.04); transition: transform 500ms var(--ease); }
+    .foodCard:hover .foodImg img{ transform: scale(1.09); }
+    .badge{
+      position:absolute;
+      top: 12px; left: 12px;
+      background: rgba(26,26,26,.78);
+      color:#fff;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+      padding: 8px 10px;
+      border-radius: 999px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,.16);
+    }
+    .foodBody{ padding: 18px 18px 16px; }
+    .foodBody h4{
+      font-family: Inter, sans-serif;
+      font-weight: 900;
+      font-size: 16px;
+      letter-spacing:.01em;
+      margin:0;
+    }
+    .foodBody p{
+      margin-top: 8px;
+      color:#666;
+      font-weight: 300;
+      line-height:1.6;
+      font-size: 14px;
+    }
+    .foodMeta{
+      margin-top: 12px;
+      display:flex; gap: 10px; flex-wrap:wrap;
+    }
+    .pill2{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(26,26,26,.10);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:#222;
+      background: rgba(244,247,234,.70);
+    }
+    .pill2 i{ width:14px; height:14px; }
+
+    /* Testimonials slider */
+    .slider{
+      position:relative;
+      overflow:hidden;
+      border-radius: 30px;
+      border: 1px solid rgba(26,26,26,.08);
+      background: #fff;
+      box-shadow: 0 12px 34px rgba(0,0,0,.08);
+    }
+    .track{
+      display:flex;
+      transition: transform 550ms var(--ease);
+    }
+    .tcard{
+      min-width: 100%;
+      padding: 26px 24px;
+      display:grid;
+      gap: 12px;
+    }
+    .tquote{
+      font-size: 18px;
+      line-height:1.75;
+      font-weight: 300;
+      color:#333;
+    }
+    .tby{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      color:#666;
+      font-size: 13px;
+    }
+    .stars{ display:inline-flex; gap:3px; }
+    .stars i{ width:16px; height:16px; color: #d4a373; }
+    .sliderNav{
+      margin-top: 12px;
+      display:flex; gap:10px; justify-content:center; align-items:center;
+    }
+    .dotBtn{
+      width:10px; height:10px;
+      border-radius:999px;
+      border:none;
+      background: rgba(26,26,26,.18);
+      cursor:pointer;
+      transition: transform 200ms ease, background 200ms ease;
+    }
+    .dotBtn.is-on{ background: rgba(26,26,26,.70); transform: scale(1.2); }
+
+    /* FAQ */
+    .faq{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 980px){ .faq{ grid-template-columns: 1fr; } }
+    details{
+      background:#fff;
+      border: 1px solid rgba(26,26,26,.08);
+      border-radius: 22px;
+      padding: 16px 16px;
+      box-shadow: 0 12px 34px rgba(0,0,0,.06);
+      transition: transform 220ms ease, box-shadow 220ms ease;
+    }
+    details:hover{ transform: translateY(-1px); box-shadow: 0 18px 60px rgba(0,0,0,.10); }
+    summary{
+      cursor:pointer;
+      list-style:none;
+      display:flex; align-items:center; justify-content:space-between;
+      gap: 12px;
+      font-weight: 900;
+      letter-spacing:.02em;
+    }
+    summary::-webkit-details-marker{ display:none; }
+    details p{
+      margin-top: 10px;
+      color:#666;
+      line-height:1.75;
+      font-weight: 300;
+      font-size: 14px;
+    }
+
+    /* Maps section */
+    .maps{
+      background: #1a1a1a;
+      color: var(--bg);
+      border-top: 1px solid rgba(255,255,255,.08);
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      padding: 90px 0;
+    }
+    .maps h2{ font-size: clamp(34px, 3.2vw, 58px); }
+    .maps p{ margin-top: 10px; color: rgba(255,255,255,.60); font-weight:300; }
+    .maps__grid{
+      margin-top: 42px;
+      display:grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 18px;
+      align-items:stretch;
+    }
+    @media (max-width: 980px){ .maps__grid{ grid-template-columns: 1fr; } }
+    .tab{
+      width:100%;
+      text-align:left;
+      border-radius: 22px;
+      padding: 18px 18px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      color: rgba(255,255,255,.65);
+      cursor:pointer;
+      transition: transform 220ms ease, background 220ms ease, color 220ms ease, border-color 220ms ease;
+    }
+    .tab:hover{ background: rgba(255,255,255,.08); color: rgba(255,255,255,.88); }
+    .tab.is-active{
+      background: var(--bg);
+      color: var(--text);
+      border-color: transparent;
+      transform: scale(1.02);
+      box-shadow: var(--shadow-soft);
+    }
+    .tab__top{ display:flex; justify-content:space-between; align-items:center; gap: 12px; }
+    .tab__top strong{
+      font-weight: 900;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      font-size: 12px;
+      font-family: Inter, sans-serif;
+    }
+    .tab__desc{ margin-top: 6px; font-size: 12px; opacity:.78; }
+
+    .mapCard{
+      position:relative;
+      border-radius: var(--radius-2xl);
+      overflow:hidden;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.06);
+      min-height: 420px;
+    }
+    .mapCard iframe{
+      width:100%; height:100%;
+      border:0;
+      filter: grayscale(1) invert(.92) contrast(.83);
+    }
+    .mapBadge{
+      position:absolute;
+      left:16px; bottom:16px;
+      background:#fff;
+      color:#000;
+      border-radius: 14px;
+      padding: 10px 12px;
+      font-weight: 900;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      font-size: 10px;
+      display:flex; align-items:center; gap:8px;
+      box-shadow: var(--shadow-soft);
+    }
+    .mapActions{
+      position:absolute;
+      right: 16px;
+      bottom: 16px;
+      display:flex;
+      gap: 8px;
+      flex-wrap:wrap;
+    }
+    .miniBtn{
+      border:none;
+      cursor:pointer;
+      border-radius: 999px;
+      padding: 10px 12px;
+      font-weight: 900;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      font-size: 10px;
+      background: rgba(255,255,255,.12);
+      color:#fff;
+      border: 1px solid rgba(255,255,255,.18);
+      backdrop-filter: blur(10px);
+      transition: transform 200ms ease, background 200ms ease;
+    }
+    .miniBtn:hover{ transform: translateY(-2px); background: rgba(255,255,255,.18); }
+
+    /* Contact */
+    .contact{
+      background: #e8ebd9;
+      padding: 90px 0;
+    }
+    .contactCard{
+      background: var(--card);
+      border-radius: 48px;
+      padding: 42px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(26,26,26,.08);
+    }
+    @media (max-width: 720px){ .contactCard{ padding: 26px; border-radius: 34px; } }
+    .contactHead{ text-align:center; }
+    .contactHead .kicker{
+      font-weight: 900;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      font-size: 11px;
+      color: var(--cafe);
+    }
+    .contactHead h2{ margin-top: 10px; font-size: clamp(28px, 3vw, 52px); color: var(--text); }
+    .contactHead p{ margin-top: 10px; color: #6b6b6b; font-weight: 300; line-height:1.7; }
+
+    form{ margin-top: 26px; }
+    .grid2{ display:grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 760px){ .grid2{ grid-template-columns: 1fr; } }
+
+    label{
+      display:block; margin: 0 0 6px 10px;
+      font-size: 11px; font-weight: 900;
+      letter-spacing: .18em; text-transform: uppercase;
+      color: #9a9a9a;
+    }
+    input, select, textarea{
+      width:100%;
+      padding: 14px 14px;
+      border-radius: 16px;
+      border: 1px solid transparent;
+      background: #f8f8f8;
+      outline:none;
+      transition: border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+    }
+    input:focus, select:focus, textarea:focus{
+      background:#fff;
+      border-color: var(--arabe);
+      box-shadow: 0 12px 30px rgba(185,123,78,.18);
+    }
+    textarea{ resize: vertical; min-height: 130px; }
+
+    .send{
+      width:100%;
+      margin-top: 12px;
+      padding: 16px 18px;
+      border-radius: 16px;
+      background: var(--text);
+      color:#fff;
+      font-weight: 900;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      border:none;
+      cursor:pointer;
+      transition: transform 200ms ease, background 200ms ease, box-shadow 200ms ease;
+      box-shadow: var(--shadow-soft);
+    }
+    .send:hover{ background: var(--arabe); transform: translateY(-2px); }
+    .contactFoot{
+      margin-top: 20px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(0,0,0,.07);
+      display:flex; flex-wrap:wrap;
+      gap: 14px;
+      justify-content:space-between;
+      color: #6b6b6b;
+      font-size: 14px;
+    }
+    .contactFoot a{ display:inline-flex; align-items:center; gap:8px; color:#6b6b6b; transition: color 180ms ease; }
+    .contactFoot a:hover{ color: var(--arabe); }
+
+    /* Footer */
+    footer{
+      background:#0a0a0a;
+      color:#888;
+      padding: 90px 0 40px;
+      position:relative;
+      overflow:hidden;
+    }
+    .footerTex{
+      position:absolute; inset:0;
+      opacity:.10;
+      background-image: url('https://www.transparenttextures.com/patterns/black-scales.png');
+    }
+    .fgrid{
+      position:relative;
+      display:grid;
+      grid-template-columns: 1.2fr 1fr 1fr 1fr;
+      gap: 28px;
+      padding-bottom: 44px;
+      margin-bottom: 22px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+    }
+    @media (max-width: 980px){ .fgrid{ grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 560px){ .fgrid{ grid-template-columns: 1fr; } }
+    .flogo{ height: 60px; filter: brightness(0) invert(1); opacity:.85; }
+    .fgrid h4{
+      font-family: Inter, sans-serif;
+      font-weight: 900;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      font-size: 11px;
+      color:#fff;
+      margin-bottom: 14px;
+    }
+    .fgrid ul{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:10px; }
+    .fgrid a, .fgrid button{
+      background:none; border:none; padding:0;
+      color:#888;
+      cursor:pointer;
+      text-align:left;
+      transition: color 180ms ease;
+      font-size: 14px;
+    }
+    .fgrid a:hover{ color: var(--arabe); }
+    .social{ display:flex; gap:10px; }
+    .iconBtn{
+      width:42px; height:42px;
+      border-radius:999px;
+      background:#151515;
+      border: 1px solid rgba(255,255,255,.10);
+      color:#ccc;
+      display:flex; align-items:center; justify-content:center;
+      transition: transform 200ms ease, background 200ms ease, color 200ms ease;
+    }
+    .iconBtn:hover{ background: var(--arabe); color:#fff; transform: translateY(-2px); }
+    .fineprint{
+      position:relative;
+      display:flex;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      gap: 10px;
+      font-weight: 900;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      font-size: 10px;
+      color:#888;
+    }
+    .fineprint strong{ color:#fff; letter-spacing:.08em; text-transform:none; font-weight:800; }
+    .made{ display:flex; align-items:center; gap:8px; }
+    .made svg{ width:12px; height:12px; }
+    .heart{ color: #ff4d6d; fill: #ff4d6d; }
+
+    /* Cookie */
+    .cookie{
+      position:fixed; left:0; right:0; bottom:0;
+      z-index: 90;
+      background:#fff;
+      padding: 18px 18px;
+      box-shadow: 0 -18px 60px rgba(0,0,0,.18);
+      display:none;
+    }
+    .cookie.is-visible{ display:block; animation: slideUp 240ms ease; }
+    @keyframes slideUp{ from{ transform: translateY(16px); opacity:0; } to{ transform:none; opacity:1; } }
+    .cookie__row{
+      display:flex; align-items:center; justify-content:space-between;
+      gap: 14px; flex-wrap:wrap;
+    }
+    .cookie__txt{ max-width: 760px; color:#666; font-size: 14px; line-height:1.5; }
+    .cookie__txt strong{ color: var(--text); display:block; margin-bottom:4px; }
+    .cookie__actions{ display:flex; gap:10px; flex-wrap:wrap; }
+    .cookie__actions button{
+      border:none; cursor:pointer;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-weight: 900;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      font-size: 11px;
+    }
+    .cookie__actions .link{
+      background: none;
+      color:#777;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+    .cookie__actions .ok{ background: var(--text); color:#fff; }
+    .cookie__actions .ok:hover{ background: var(--arabe); }
+
+    /* Modals */
+    .modalRoot{
+      position:fixed; inset:0;
+      z-index: 120;
+      display:none;
+      padding: 18px;
+      place-items:center;
+    }
+    .modalRoot.is-open{ display:grid; }
+    .backdrop{
+      position:absolute; inset:0;
+      background: rgba(26,26,26,.92);
+      backdrop-filter: blur(12px);
+    }
+    .dialog{
+      position:relative;
+      width: min(980px, calc(100% - 12px));
+      border-radius: 44px;
+      background: var(--bg);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      border: 1px solid rgba(255,255,255,.08);
+      transform: translateY(6px);
+      animation: dialogIn 220ms ease forwards;
+    }
+    @keyframes dialogIn{ to{ transform:none; } }
+    .dialog__close{
+      position:absolute;
+      top: 16px; right: 16px;
+      width:44px; height:44px;
+      border-radius:999px;
+      border:none;
+      background: rgba(0,0,0,.05);
+      cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .dialog__close:hover{ background: rgba(0,0,0,.08); }
+
+    .flow{
+      display:grid;
+      grid-template-columns: 320px 1fr;
+      min-height: 520px;
+    }
+    @media (max-width: 860px){ .flow{ grid-template-columns: 1fr; } .flow__left{ display:none; } }
+    .flow__left{
+      background: #e8ebd9;
+      border-right: 1px solid rgba(0,0,0,.08);
+      padding: 32px 26px;
+      display:flex; flex-direction:column; justify-content:space-between;
+    }
+    .flow__left h3{ font-size: 30px; }
+    .steps{
+      margin-top: 22px;
+      position:relative;
+      display:flex; flex-direction:column; gap:18px;
+    }
+    .steps::before{
+      content:"";
+      position:absolute;
+      left: 16px; top: 6px; bottom: 6px;
+      width:1px; background: rgba(0,0,0,.18);
+    }
+    .step{
+      position:relative;
+      display:flex; align-items:center; gap:12px;
+      opacity:.45;
+    }
+    .step.is-on{ opacity:1; }
+    .bubble{
+      width:34px; height:34px;
+      border-radius:999px;
+      display:flex; align-items:center; justify-content:center;
+      border:2px solid rgba(0,0,0,.35);
+      color: rgba(0,0,0,.55);
+      font-weight:900;
+      background: transparent;
+    }
+    .step.is-on .bubble{
+      background: var(--text);
+      border-color: var(--text);
+      color:#fff;
+    }
+    .stepLabel{
+      font-family: Inter, sans-serif;
+      font-weight: 900;
+      letter-spacing: .22em;
+      text-transform:uppercase;
+      font-size: 11px;
+      color: rgba(0,0,0,.75);
+    }
+
+    .flow__right{
+      padding: 34px 30px;
+      display:flex; flex-direction:column; justify-content:center;
+    }
+    @media (max-width: 560px){ .flow__right{ padding: 28px 20px; } }
+    .back{
+      align-self:flex-start;
+      background:none; border:none;
+      cursor:pointer;
+      color:#9b9b9b;
+      font-weight: 900;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      font-size: 11px;
+      padding: 6px 0;
+    }
+    .back:hover{ color: var(--text); }
+    .flowTitle{
+      font-size: 34px;
+      margin-top: 8px;
+      letter-spacing: -.01em;
+    }
+    .cards{ margin-top: 16px; display:grid; gap: 12px; }
+    .cardBtn{
+      width:100%;
+      text-align:left;
+      background:#fff;
+      border: 2px solid transparent;
+      border-radius: 22px;
+      padding: 18px 18px;
+      cursor:pointer;
+      box-shadow: 0 10px 24px rgba(0,0,0,.07);
+      transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+    }
+    .cardBtn:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 16px 42px rgba(0,0,0,.10);
+      border-color: rgba(26,26,26,.90);
+    }
+    .cardBtn strong{ font-family: Inter, sans-serif; font-size: 18px; font-weight: 900; }
+    .cardBtn small{ display:block; margin-top: 4px; font-size: 12px; color:#7a7a7a; }
+    .emoji{ font-size: 26px; filter: grayscale(.8); transition: filter 220ms ease; }
+    .cardBtn:hover .emoji{ filter: grayscale(0); }
+
+    .airportBtn{
+      display:block;
+      background:#fff;
+      border-radius: 22px;
+      padding: 18px 18px;
+      cursor:pointer;
+      border: 1px solid rgba(0,0,0,.08);
+      transition: background 200ms ease, transform 200ms ease, color 200ms ease;
+    }
+    .airportBtn:hover{ background: var(--text); color:#fff; transform: translateY(-2px); }
+    .airportBtn h4{
+      font-family: Inter, sans-serif;
+      font-weight: 900;
+      margin:0;
+      font-size: 18px;
+    }
+    .airportBtn p{ margin-top: 6px; font-size: 12px; color: #7a7a7a; }
+    .airportBtn:hover p{ color: rgba(255,255,255,.75); }
+
+    .storeGrid{
+      margin-top: 12px;
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 10px;
+    }
+    @media (max-width: 520px){ .storeGrid{ grid-template-columns: 1fr; } }
+    .storeBtn{
+      background:#fff;
+      border-radius: 22px;
+      border: 2px solid transparent;
+      padding: 18px 14px;
+      cursor:pointer;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      gap: 10px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.07);
+      transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+    }
+    .storeBtn:hover{ transform: translateY(-2px); box-shadow: 0 18px 42px rgba(0,0,0,.10); }
+    .storeBtn span{
+      font-family: Inter, sans-serif;
+      font-weight: 900;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      font-size: 11px;
+      color: var(--text);
+    }
+    .storeBtn[data-color="arabe"]{ color: var(--arabe); }
+    .storeBtn[data-color="cafe"]{ color: var(--cafe); }
+    .storeBtn[data-color="sushi"]{ color: var(--sushi); }
+    .storeBtn:hover{ border-color: currentColor; }
+
+    .legalDialog{
+      width: min(760px, calc(100% - 12px));
+      max-height: 80vh;
+      overflow:auto;
+      padding: 26px 24px;
+      border-radius: 34px;
+      background: var(--bg);
+    }
+    .legalDialog h3{ font-size: 30px; }
+    .legalDialog .prose{
+      margin-top: 10px;
+      color:#666;
+      line-height:1.75;
+      font-size: 14px;
+    }
+    .prose h4{
+      font-family: Inter, sans-serif;
+      font-size: 14px;
+      font-weight: 900;
+      color: var(--text);
+      margin-top: 14px;
+    }
+    .prose ul{ padding-left: 18px; }
+    .prose li{ margin: 8px 0; }
+
+    /* Back to top */
+    .toTop{
+      position:fixed;
+      right: 16px;
+      bottom: 18px;
+      z-index: 70;
+      width: 50px; height: 50px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(26,26,26,.62);
+      color:#fff;
+      display:none;
+      align-items:center; justify-content:center;
+      cursor:pointer;
+      box-shadow: 0 18px 60px rgba(0,0,0,.22);
+      backdrop-filter: blur(12px);
+      transition: transform 200ms ease, background 200ms ease;
+    }
+    .toTop:hover{ transform: translateY(-2px); background: rgba(26,26,26,.78); }
+    .toTop.is-visible{ display:flex; animation: fadeIn2 220ms ease; }
+    @keyframes fadeIn2{ from{opacity:0} to{opacity:1} }
+
+    .sr-only{
+      position:absolute; width:1px; height:1px;
+      padding:0; margin:-1px; overflow:hidden;
+      clip:rect(0,0,0,0); white-space:nowrap; border:0;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Ambient shapes -->
+  <div class="ambient" aria-hidden="true">
+    <div class="blob a"></div>
+    <div class="blob b"></div>
+    <div class="blob c"></div>
+  </div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- Loader -->
+  <div class="loader" id="loader" aria-label="Carregando">
+    <div class="loader__panelWrap" aria-hidden="true">
+      <div class="loader__panel left"></div>
+      <div class="loader__panel right"></div>
+    </div>
+    <div class="loader__content" aria-hidden="true">
+      <img class="loader__logo" src="https://i.imgur.com/VYM8d1c.png" alt="" />
+      <div class="loader__dots">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navbar -->
+  <header class="nav" id="nav">
+    <div class="container">
+      <div class="nav__row">
+        <a class="brand" href="#top" aria-label="Kozinha Group">
+          <img src="https://i.imgur.com/VYM8d1c.png" alt="Kozinha Group" />
+        </a>
+
+        <div class="nav__linksWrap">
+          <nav class="nav__links" aria-label="Navegação principal">
+            <a href="#arabe">Árabe</a>
+            <a href="#cafe">Café</a>
+            <a href="#sushi">Sushi</a>
+            <a href="#lojas">Lojas</a>
+            <button type="button" data-scroll="#contato">Contato</button>
+          </nav>
+
+          <button class="cta magnet" type="button" data-open-flow>
+            <i data-lucide="smartphone"></i>
+            Cardápio Digital
+          </button>
+        </div>
+
+        <button class="hamburger" type="button" id="hamburger" aria-label="Abrir menu" aria-expanded="false" aria-controls="mnav">
+          <i data-lucide="menu"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile menu -->
+  <aside class="mnav" id="mnav" aria-hidden="true">
+    <nav class="mnav__links" aria-label="Menu mobile">
+      <a href="#arabe" data-close-mnav>Culinária Árabe</a>
+      <a href="#cafe" data-close-mnav>Kozinha Café</a>
+      <a href="#sushi" data-close-mnav>Sushi Bar</a>
+      <a href="#lojas" data-close-mnav>Lojas</a>
+      <button type="button" data-scroll="#contato" data-close-mnav>Contato</button>
+    </nav>
+    <div class="mnav__cta">
+      <button type="button" data-open-flow data-close-mnav>Acessar Cardápio</button>
+    </div>
+  </aside>
+
+  <main id="top" style="position:relative;">
+    <!-- Hero -->
+    <section class="hero" aria-label="Abertura">
+      <div class="hero__bg kb" aria-hidden="true">
+        <img src="https://i.imgur.com/BdCuQ67.png" alt="" loading="eager" />
+        <div class="hero__overlay"></div>
+        <div class="hero__glow"></div>
+      </div>
+
+      <div class="hero__content">
+        <div class="reveal is-visible">
+          <span class="pill">Desde 2015 · Aeroportos do Brasil</span>
+
+          <h1>
+            Conexão<br>
+            <em>Gastronômica</em>
+          </h1>
+
+          <p>
+            Esqueça o genérico. Uma experiência rápida, bonita e deliciosa —
+            do embarque ao primeiro mordida.
+          </p>
+
+          <div class="hero__actions">
+            <button class="btn primary magnet" type="button" data-open-flow>
+              Fazer Pedido <i data-lucide="arrow-right"></i>
+            </button>
+            <button class="btn ghost magnet" type="button" data-scroll="#lojas">
+              Nossas Lojas
+            </button>
+          </div>
+
+          <p id="prefHint" style="margin-top:18px; font-size:13px; color: rgba(255,255,255,.68); display:none;">
+            Dica: vamos lembrar sua última unidade para você abrir o cardápio mais rápido.
+          </p>
+        </div>
+      </div>
+
+      <div class="scrollHint bounce" aria-hidden="true">
+        <i data-lucide="chevron-down"></i>
+      </div>
+    </section>
+
+    <!-- WHY (novo) -->
+    <section class="section alt">
+      <div class="container">
+        <div class="headline reveal">
+          <h2>Três marcas. Uma experiência.</h2>
+          <p>
+            O que muda é o sabor — a qualidade, o cuidado e a rapidez são padrão Kozinha.
+          </p>
+        </div>
+
+        <div class="bentoBig reveal">
+          <div class="tile">
+            <div class="tileGlow" aria-hidden="true"></div>
+            <div class="k"><i data-lucide="sparkles"></i> Experiência</div>
+            <h3>Feito pra aeroporto</h3>
+            <p>
+              Uma jornada fluida: escolha a unidade, abra o cardápio e finalize sem atrito.
+              Design leve, elegante e rápido.
+            </p>
+            <div class="chipRow">
+              <span class="chip">Rápido</span>
+              <span class="chip">Bonito</span>
+              <span class="chip">Sem bagunça</span>
+            </div>
+          </div>
+
+          <div class="tile">
+            <div class="k"><i data-lucide="shield-check"></i> Qualidade</div>
+            <h3>Consistência</h3>
+            <p>Ingredientes selecionados e operação otimizada para manter padrão em todas as unidades.</p>
+            <div class="chipRow">
+              <span class="chip">Frescor</span>
+              <span class="chip">Controle</span>
+              <span class="chip">Padrão</span>
+            </div>
+          </div>
+
+          <div class="tile">
+            <div class="k"><i data-lucide="clock-3"></i> Agilidade</div>
+            <h3>Tempo é luxo</h3>
+            <p>Uma refeição que respeita seu relógio sem sacrificar o sabor.</p>
+            <div class="chipRow">
+              <span class="chip">Grab & go</span>
+              <span class="chip">Na hora</span>
+              <span class="chip">Sem fila</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Popular items (novo) -->
+    <section class="section">
+      <div class="container">
+        <div class="headline reveal">
+          <h2>Mais pedidos</h2>
+          <p>O que a galera mais abre no cardápio quando está com pressa.</p>
+        </div>
+
+        <div class="cards3 reveal">
+          <article class="foodCard">
+            <div class="foodImg">
+              <span class="badge">Árabe</span>
+              <img src="https://i.imgur.com/rKqmgLm.jpeg" alt="Esfiha e pratos árabes" loading="lazy" decoding="async">
+            </div>
+            <div class="foodBody">
+              <h4>Esfiha assada na hora</h4>
+              <p>Quentinha, massa leve e recheio caprichado. Perfeita pra comer andando.</p>
+              <div class="foodMeta">
+                <span class="pill2"><i data-lucide="flame"></i> Quente</span>
+                <span class="pill2"><i data-lucide="timer"></i> Rápido</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="foodCard">
+            <div class="foodImg">
+              <span class="badge">Café</span>
+              <img src="https://i.imgur.com/1Skbz1C.jpeg" alt="Café e latte art" loading="lazy" decoding="async">
+            </div>
+            <div class="foodBody">
+              <h4>Cappuccino + confeitaria</h4>
+              <p>Seu “reset” antes do embarque. Café bem extraído e doce de respeito.</p>
+              <div class="foodMeta">
+                <span class="pill2"><i data-lucide="coffee"></i> Barista</span>
+                <span class="pill2"><i data-lucide="sparkles"></i> Premium</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="foodCard">
+            <div class="foodImg">
+              <span class="badge">Sushi</span>
+              <img src="https://i.imgur.com/rJO5O88.jpeg" alt="Combinado de sushi" loading="lazy" decoding="async">
+            </div>
+            <div class="foodBody">
+              <h4>Combinado leve</h4>
+              <p>Frescor e praticidade. Uma escolha limpa e rápida pra viajar bem.</p>
+              <div class="foodMeta">
+                <span class="pill2"><i data-lucide="leaf"></i> Leve</span>
+                <span class="pill2"><i data-lucide="fish"></i> Fresco</span>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div style="display:flex; justify-content:center; margin-top:22px;">
+          <button class="btn primary magnet" type="button" data-open-flow>
+            Abrir Cardápio Digital <i data-lucide="external-link"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Árabe -->
+    <section id="arabe" class="section pattern" style="background:var(--arabe); color:var(--bg)">
+      <div class="container">
+        <div class="split">
+          <div class="reveal">
+            <div class="media" style="border-radius:999px;">
+              <img src="https://i.imgur.com/rKqmgLm.jpeg" alt="Esfihas e pratos árabes" loading="lazy" decoding="async">
+            </div>
+          </div>
+
+          <div class="reveal">
+            <span class="tag"><span class="line"></span> Origem & Tradição</span>
+            <h2>Mundo<br><span style="font-style:italic">Árabe</span></h2>
+            <p>
+              Receitas de família, do kibe crocante ao homus aveludado.
+              Ingredientes frescos, sem conservantes — feitos com o tempo que o sabor exige.
+            </p>
+
+            <div class="bento">
+              <div class="mini"><h4>Kibe</h4><p>Michui ou Tradicional</p></div>
+              <div class="mini"><h4>Esfiha</h4><p>Aberta e assada na hora</p></div>
+            </div>
+
+            <button class="btn magnet" type="button" data-open-flow style="margin-top:22px; background:var(--bg); color:var(--arabe);">
+              Ver Cardápio Árabe
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Café -->
+    <section id="cafe" class="section pattern" style="background:var(--cafe); color:var(--bg)">
+      <div class="container">
+        <div class="split" style="grid-template-columns: .95fr 1.05fr;">
+          <div class="reveal" style="order:2;">
+            <div class="media" style="border-radius: var(--radius-2xl);">
+              <img src="https://i.imgur.com/1Skbz1C.jpeg" alt="Latte art e ambiente do café" loading="lazy" decoding="async">
+            </div>
+          </div>
+
+          <div class="reveal" style="order:1;">
+            <span class="tag"><span class="line"></span> Pausa Necessária</span>
+            <h2>Kozinha<br><span style="font-style:italic">Café</span></h2>
+            <p>
+              Não é só cafeína, é um abraço. Baristas que tiram o melhor de cada grão,
+              com confeitaria e opções rápidas para levar.
+            </p>
+
+            <div class="list">
+              <div class="li"><i data-lucide="coffee"></i> Expressos e Cappuccinos</div>
+              <div class="li"><i data-lucide="star"></i> Doces e Confeitaria fina</div>
+              <div class="li"><i data-lucide="clock"></i> Opções Grab & Go</div>
+            </div>
+
+            <button class="btn magnet" type="button" data-open-flow style="margin-top:22px; background:var(--bg); color:var(--cafe);">
+              Pedir um Café
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sushi -->
+    <section id="sushi" class="section pattern" style="background:var(--sushi); color:var(--bg)">
+      <div class="container">
+        <div class="split">
+          <div class="reveal">
+            <div class="media" style="border-radius: 88px 0 88px 0;">
+              <img src="https://i.imgur.com/rJO5O88.jpeg" alt="Combinado de sushi" loading="lazy" decoding="async">
+            </div>
+          </div>
+
+          <div class="reveal">
+            <span class="tag"><span class="line"></span> Do Mar ao Ar</span>
+            <h2>Sushi<br><span style="font-style:italic">Bar</span></h2>
+            <p>
+              Leveza e frescor. Peixes frescos diariamente e combinados montados na hora
+              para uma refeição saudável antes de voar.
+            </p>
+
+            <div class="bento" style="grid-template-columns: 1fr 1fr; max-width: 560px;">
+              <div class="mini"><h4>15'</h4><p>Preparo médio (operação ágil)</p></div>
+              <div class="mini"><h4>Frescor</h4><p>Controle diário de qualidade</p></div>
+            </div>
+
+            <button class="btn magnet" type="button" data-open-flow style="margin-top:22px; background:var(--bg); color:var(--sushi);">
+              Ver Menu Japonês
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials (novo) -->
+    <section class="section alt">
+      <div class="container">
+        <div class="headline reveal">
+          <h2>O que falam</h2>
+          <p>Prova social rápida, do jeito que o aeroporto gosta.</p>
+        </div>
+
+        <div class="slider reveal" aria-label="Depoimentos">
+          <div class="track" id="track">
+            <div class="tcard">
+              <div class="tquote">“Atendimento rápido e o café tava perfeito. Salvou meu voo de manhã.”</div>
+              <div class="tby">
+                <span>Cliente · CGH</span>
+                <span class="stars" aria-label="5 estrelas">
+                  <i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i>
+                </span>
+              </div>
+            </div>
+
+            <div class="tcard">
+              <div class="tquote">“Peguei sushi antes de embarcar e foi leve, fresco, sem arrependimento.”</div>
+              <div class="tby">
+                <span>Cliente · GRU</span>
+                <span class="stars" aria-label="5 estrelas">
+                  <i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i>
+                </span>
+              </div>
+            </div>
+
+            <div class="tcard">
+              <div class="tquote">“As esfihas são viciantes. Dá pra comer andando e ainda é bom de verdade.”</div>
+              <div class="tby">
+                <span>Cliente · SDU</span>
+                <span class="stars" aria-label="5 estrelas">
+                  <i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sliderNav reveal" aria-label="Navegação do slider">
+          <button class="dotBtn is-on" type="button" data-slide="0" aria-label="Depoimento 1"></button>
+          <button class="dotBtn" type="button" data-slide="1" aria-label="Depoimento 2"></button>
+          <button class="dotBtn" type="button" data-slide="2" aria-label="Depoimento 3"></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Maps -->
+    <section id="lojas" class="maps">
+      <div class="container">
+        <div class="reveal" style="text-align:center;">
+          <h2>Encontre sua Kozinha</h2>
+          <p>Selecione o aeroporto para ver a localização exata. A gente lembra sua escolha.</p>
+        </div>
+
+        <div class="maps__grid reveal" style="margin-top:34px;">
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            <button class="tab is-active" type="button" data-map="cgh">
+              <div class="tab__top">
+                <strong>Congonhas (CGH)</strong>
+                <i data-lucide="plane"></i>
+              </div>
+              <div class="tab__desc">Saguão Central — 1º Piso</div>
+            </button>
+
+            <button class="tab" type="button" data-map="gru">
+              <div class="tab__top">
+                <strong>Guarulhos (GRU)</strong>
+                <i data-lucide="plane"></i>
+              </div>
+              <div class="tab__desc">Terminal 2 — Embarque Nacional</div>
+            </button>
+
+            <button class="tab" type="button" data-map="sdu">
+              <div class="tab__top">
+                <strong>Santos Dumont (SDU)</strong>
+                <i data-lucide="plane"></i>
+              </div>
+              <div class="tab__desc">Embarque — Portão 4</div>
+            </button>
+          </div>
+
+          <div class="mapCard" aria-label="Mapa do aeroporto selecionado">
+            <iframe id="mapFrame" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+              title="Mapa"
+              src="">
+            </iframe>
+
+            <div class="mapBadge">
+              <i data-lucide="map-pin"></i>
+              <span id="mapName">Localização</span>
+            </div>
+
+            <div class="mapActions">
+              <button class="miniBtn" type="button" id="openMapsBtn"><i data-lucide="external-link"></i> Abrir</button>
+              <button class="miniBtn" type="button" id="copyLocBtn"><i data-lucide="copy"></i> Copiar</button>
+            </div>
+          </div>
+        </div>
+
+        <p id="copied" style="margin-top:12px; text-align:center; color: rgba(255,255,255,.60); display:none;">
+          Localização copiada ✅
+        </p>
+      </div>
+    </section>
+
+    <!-- FAQ (novo) -->
+    <section class="section">
+      <div class="container">
+        <div class="headline reveal">
+          <h2>Perguntas rápidas</h2>
+          <p>Sem enrolação — só o que você precisa pra decidir agora.</p>
+        </div>
+
+        <div class="faq reveal">
+          <details>
+            <summary>O cardápio muda por unidade? <i data-lucide="chevron-down"></i></summary>
+            <p>Sim. Algumas opções podem variar por aeroporto/loja, então o ideal é abrir pelo seu local.</p>
+          </details>
+
+          <details>
+            <summary>Tem opção “rápida pra levar”? <i data-lucide="chevron-down"></i></summary>
+            <p>Tem. Café e itens grab & go são pensados justamente para quem está no corre.</p>
+          </details>
+
+          <details>
+            <summary>Vocês ficam em quais aeroportos? <i data-lucide="chevron-down"></i></summary>
+            <p>Atualmente: CGH, GRU e SDU (seção Lojas acima). Se abrir mais, dá pra adicionar em 30 segundos.</p>
+          </details>
+
+          <details>
+            <summary>Consigo falar com o SAC? <i data-lucide="chevron-down"></i></summary>
+            <p>Sim — use o formulário ou os e-mails no final da página.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contato" class="contact">
+      <div class="container" style="max-width: 980px;">
+        <div class="contactCard reveal">
+          <div class="contactHead">
+            <div class="kicker">Fale Conosco</div>
+            <h2>Como podemos ajudar?</h2>
+            <p>Sugestões, elogios ou dúvidas. Estamos sempre ouvindo.</p>
+          </div>
+
+          <form id="contactForm" action="mailto:atenciosamente@kozinhas.com" method="post" enctype="text/plain" novalidate>
+            <div class="grid2">
+              <div>
+                <label for="name">Seu Nome</label>
+                <input id="name" name="name" autocomplete="name" placeholder="Nome completo" required />
+              </div>
+              <div>
+                <label for="email">E-mail</label>
+                <input id="email" name="email" type="email" autocomplete="email" placeholder="seu@email.com" required />
+              </div>
+            </div>
+
+            <div style="margin-top:14px;">
+              <label for="subject">Assunto</label>
+              <select id="subject" name="subject" required>
+                <option value="Elogio sobre a loja">Elogio sobre a loja</option>
+                <option value="Dúvida sobre Cardápio">Dúvida sobre Cardápio</option>
+                <option value="Trabalhe Conosco">Trabalhe Conosco</option>
+                <option value="Falar com SAC">Falar com SAC</option>
+              </select>
+            </div>
+
+            <div style="margin-top:14px;">
+              <label for="message">Mensagem</label>
+              <textarea id="message" name="message" placeholder="Digite sua mensagem aqui..." required></textarea>
+            </div>
+
+            <button class="send magnet" type="submit">Enviar Mensagem</button>
+
+            <p id="formNote" style="margin-top:10px; font-size:13px; color:#888; display:none;">
+              Preencha os campos obrigatórios corretamente.
+            </p>
+          </form>
+
+          <div class="contactFoot">
+            <a href="mailto:atenciosamente@kozinhas.com"><i data-lucide="mail"></i> atenciosamente@kozinhas.com</a>
+            <a href="mailto:sac@kozinhas.com"><i data-lucide="info"></i> sac@kozinhas.com</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footerTex" aria-hidden="true"></div>
+      <div class="container">
+        <div class="fgrid">
+          <div>
+            <img class="flogo" src="https://i.imgur.com/VYM8d1c.png" alt="Kozinha Group" loading="lazy">
+            <p style="margin-top:12px; line-height:1.7; font-weight:300;">
+              Excelência em servir.<br>
+              Paixão por conectar.<br>
+              Desde 2015 nos aeroportos do Brasil.
+            </p>
+          </div>
+
+          <div>
+            <h4>Menu Rápido</h4>
+            <ul>
+              <li><a href="#arabe">Culinária Árabe</a></li>
+              <li><a href="#cafe">Café & Bakery</a></li>
+              <li><a href="#sushi">Sushi Bar</a></li>
+              <li><button type="button" data-open-flow>Cardápio Digital</button></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4>Social</h4>
+            <div class="social" aria-label="Redes sociais">
+              <a class="iconBtn" href="#" aria-label="Instagram"><i data-lucide="instagram"></i></a>
+              <a class="iconBtn" href="#" aria-label="Facebook"><i data-lucide="facebook"></i></a>
+              <a class="iconBtn" href="#" aria-label="Linkedin"><i data-lucide="linkedin"></i></a>
+            </div>
+          </div>
+
+          <div>
+            <h4>Legal</h4>
+            <ul>
+              <li><button type="button" data-open-terms>Termos de Uso</button></li>
+              <li><button type="button" data-open-privacy>Política de Privacidade</button></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="fineprint">
+          <div>© <span id="year"></span> Kozinha Group. All rights reserved.</div>
+          <div class="made">
+            Feito com muito <i class="heart" data-lucide="heart"></i> e <i data-lucide="coffee"></i> por <strong>CVitorSP</strong>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- Back to top -->
+  <button class="toTop" id="toTop" type="button" aria-label="Voltar ao topo">
+    <i data-lucide="arrow-up"></i>
+  </button>
+
+  <!-- Cookie -->
+  <div class="cookie" id="cookie" role="region" aria-label="Aviso de cookies">
+    <div class="container">
+      <div class="cookie__row">
+        <div class="cookie__txt">
+          <strong>Este site utiliza cookies.</strong>
+          Utilizamos cookies para personalizar sua experiência. Ao continuar navegando, você concorda com nossa Política de Privacidade.
+        </div>
+        <div class="cookie__actions">
+          <button class="link" type="button" data-open-privacy>Ler Política</button>
+          <button class="ok" type="button" id="cookieOk">Aceitar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Flow -->
+  <div class="modalRoot" id="flowModal" aria-hidden="true">
+    <div class="backdrop" data-close-modal></div>
+
+    <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="flowTitle">
+      <button class="dialog__close" type="button" data-close-modal aria-label="Fechar">
+        <i data-lucide="x"></i>
+      </button>
+
+      <div class="flow">
+        <aside class="flow__left" aria-hidden="true">
+          <div>
+            <h3>Check-in</h3>
+            <div class="steps">
+              <div class="step is-on" data-step-ind="1">
+                <div class="bubble">1</div>
+                <div class="stepLabel">Cidade</div>
+              </div>
+              <div class="step" data-step-ind="2">
+                <div class="bubble">2</div>
+                <div class="stepLabel">Aeroporto</div>
+              </div>
+              <div class="step" data-step-ind="3">
+                <div class="bubble">3</div>
+                <div class="stepLabel">Loja</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="font-size:12px; color:#6b6b6b; line-height:1.6;">
+            Dica: vamos lembrar sua última unidade para você abrir o cardápio mais rápido.
+          </div>
+        </aside>
+
+        <section class="flow__right">
+          <button class="back" type="button" id="flowBack" style="display:none;">← Voltar</button>
+
+          <!-- Step 1 -->
+          <div class="flowStep" data-step="1">
+            <h2 class="flowTitle" id="flowTitle">Onde você está?</h2>
+            <div class="cards" style="margin-top:14px;">
+              <button class="cardBtn" type="button" data-city="sp">
+                <div>
+                  <strong>São Paulo (SP)</strong>
+                  <small>Unidades: CGH / GRU</small>
+                </div>
+                <div class="emoji" aria-hidden="true">🌆</div>
+              </button>
+
+              <button class="cardBtn" type="button" data-city="rj">
+                <div>
+                  <strong>Rio de Janeiro (RJ)</strong>
+                  <small>Unidade: SDU</small>
+                </div>
+                <div class="emoji" aria-hidden="true">🏖</div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="flowStep" data-step="2" style="display:none;">
+            <h2 class="flowTitle">Qual Aeroporto?</h2>
+            <div class="cards" id="airports" style="margin-top:14px;"></div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="flowStep" data-step="3" style="display:none;">
+            <h2 class="flowTitle">Escolha a Loja</h2>
+            <p style="margin-top:8px; color:#6b6b6b; font-weight:300; line-height:1.6;">
+              Abriremos o cardápio digital em uma nova aba.
+            </p>
+
+            <div class="storeGrid">
+              <button class="storeBtn" type="button" data-store="arabe" data-color="arabe">
+                <i data-lucide="star"></i>
+                <span>Árabe</span>
+              </button>
+              <button class="storeBtn" type="button" data-store="cafe" data-color="cafe">
+                <i data-lucide="coffee"></i>
+                <span>Café</span>
+              </button>
+              <button class="storeBtn" type="button" data-store="sushi" data-color="sushi">
+                <i data-lucide="utensils"></i>
+                <span>Sushi</span>
+              </button>
+            </div>
+
+            <div style="margin-top:14px; font-size:12px; color:#8a8a8a;">
+              Problema para abrir? <a href="#" id="openPdfInline" style="color:var(--arabe); font-weight:900;">Clique aqui</a>.
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Legal -->
+  <div class="modalRoot" id="legalModal" aria-hidden="true">
+    <div class="backdrop" data-close-legal></div>
+
+    <div class="legalDialog dialog" role="dialog" aria-modal="true" aria-labelledby="legalTitle">
+      <button class="dialog__close" type="button" data-close-legal aria-label="Fechar">
+        <i data-lucide="x"></i>
+      </button>
+      <h3 id="legalTitle"></h3>
+      <div class="prose" id="legalBody"></div>
+    </div>
+  </div>
+
+  <script>
+    const PDF_LINK = "https://www.kozinhas.com.br/cardapio-digital.pdf";
+    const consentKey = "kozinha_cookie_consent";
+    const prefKey = "kozinha_last_pref";
+
+    const maps = {
+      cgh: {
+        name: "Congonhas (CGH)",
+        embed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3656.088526569106!2d-46.66016148502146!3d-23.61245848465715!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94ce5a6eba98327b%3A0xc54570020141f531!2sAeroporto%20de%20S%C3%A3o%20Paulo%2FCongonhas!5e0!3m2!1spt-BR!2sbr!4v1614188723456!5m2!1spt-BR!2sbr",
+        open: "https://www.google.com/maps?q=Aeroporto+de+Congonhas"
+      },
+      gru: {
+        name: "Guarulhos (GRU)",
+        embed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3659.0254648900777!2d-46.48411038502353!3d-23.43555038474548!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94ce621f3750d03f%3A0x6b4f74d0e5361002!2sAeroporto%20Internacional%20de%20S%C3%A3o%20Paulo-Guarulhos!5e0!3m2!1spt-BR!2sbr!4v1614188755123!5m2!1spt-BR!2sbr",
+        open: "https://www.google.com/maps?q=Aeroporto+de+Guarulhos"
+      },
+      sdu: {
+        name: "Santos Dumont (SDU)",
+        embed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3675.356321287956!2d-43.16738968503461!3d-22.91490298500755!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x997f5e359c3f9b%3A0x6b1655b38d3501a!2sAeroporto%20Santos%20Dumont!5e0!3m2!1spt-BR!2sbr!4v1614188789012!5m2!1spt-BR!2sbr",
+        open: "https://www.google.com/maps?q=Aeroporto+Santos+Dumont"
+      }
+    };
+
+    const airportsByCity = {
+      sp: [
+        { id: "cgh", title: "Congonhas (CGH)", desc: "Saguão Central" },
+        { id: "gru", title: "Guarulhos (GRU)", desc: "Terminal 2" },
+      ],
+      rj: [
+        { id: "sdu", title: "Santos Dumont (SDU)", desc: "Embarque" },
+      ],
+    };
+
+    const legalContent = {
+      privacy: {
+        title: "Política de Privacidade",
+        body: `
+          <p>A <strong>Kozinha Group</strong> (“Nós”) está comprometida em proteger a privacidade dos usuários deste site.</p>
+          <h4>1. Cookies</h4>
+          <p>Usamos cookies para lembrar consentimento e preferências (ex.: unidade selecionada).</p>
+          <h4>2. Contato</h4>
+          <p>Dados do formulário são usados apenas para atendimento e retorno.</p>
+        `
+      },
+      terms: {
+        title: "Termos de Uso",
+        body: `
+          <p>Ao acessar este site, você concorda com os seguintes termos:</p>
+          <ul>
+            <li>Conteúdo e marca são propriedade do Kozinha Group ou parceiros autorizados.</li>
+            <li>Cardápio e disponibilidade podem variar por unidade.</li>
+            <li>Alterações podem ocorrer sem aviso prévio.</li>
+          </ul>
+        `
+      }
+    };
+
+    // Icons
+    window.addEventListener("DOMContentLoaded", () => {
+      if (window.lucide) window.lucide.createIcons();
+    });
+
+    // Year
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // Loader
+    const loader = document.getElementById("loader");
+    window.addEventListener("load", () => {
+      setTimeout(() => loader.classList.add("is-hidden"), 1450);
+      setTimeout(() => loader.remove(), 2200);
+    });
+
+    // Navbar + toTop
+    const nav = document.getElementById("nav");
+    const toTop = document.getElementById("toTop");
+    const onScroll = () => {
+      const y = window.scrollY || 0;
+      nav.classList.toggle("is-scrolled", y > 50);
+      toTop.classList.toggle("is-visible", y > 650);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    toTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+
+    // Smooth scroll buttons
+    document.querySelectorAll("[data-scroll]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const sel = btn.getAttribute("data-scroll");
+        const el = document.querySelector(sel);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    });
+
+    // Reveal observer
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) {
+          e.target.classList.add("is-visible");
+          io.unobserve(e.target);
+        }
+      }
+    }, { threshold: 0.12 });
+    document.querySelectorAll(".reveal:not(.is-visible)").forEach(el => io.observe(el));
+
+    // Mobile nav
+    const hamburger = document.getElementById("hamburger");
+    const mnav = document.getElementById("mnav");
+    const setMnav = (open) => {
+      mnav.classList.toggle("is-open", open);
+      mnav.setAttribute("aria-hidden", String(!open));
+      hamburger.setAttribute("aria-expanded", String(open));
+      hamburger.setAttribute("aria-label", open ? "Fechar menu" : "Abrir menu");
+      hamburger.innerHTML = open ? '<i data-lucide="x"></i>' : '<i data-lucide="menu"></i>';
+      if (window.lucide) window.lucide.createIcons();
+      document.body.style.overflow = open ? "hidden" : "";
+    };
+    hamburger.addEventListener("click", () => setMnav(!mnav.classList.contains("is-open")));
+    document.querySelectorAll("[data-close-mnav]").forEach(el => el.addEventListener("click", () => setMnav(false)));
+
+    // Cookie banner
+    const cookie = document.getElementById("cookie");
+    const cookieOk = document.getElementById("cookieOk");
+    const hasConsent = localStorage.getItem(consentKey) === "true";
+    if (!hasConsent) cookie.classList.add("is-visible");
+    cookieOk.addEventListener("click", () => {
+      localStorage.setItem(consentKey, "true");
+      cookie.classList.remove("is-visible");
+    });
+
+    // Magnet hover (sutil e premium)
+    const setMagnetVars = (el, ev) => {
+      const r = el.getBoundingClientRect();
+      const x = ((ev.clientX - r.left) / r.width) * 100;
+      const y = ((ev.clientY - r.top) / r.height) * 100;
+      el.style.setProperty("--mx", x + "%");
+      el.style.setProperty("--my", y + "%");
+    };
+    document.querySelectorAll(".magnet").forEach(el => {
+      el.addEventListener("mousemove", (ev) => setMagnetVars(el, ev));
+    });
+
+    // Maps
+    const mapFrame = document.getElementById("mapFrame");
+    const mapName = document.getElementById("mapName");
+    const openMapsBtn = document.getElementById("openMapsBtn");
+    const copyLocBtn = document.getElementById("copyLocBtn");
+    const copied = document.getElementById("copied");
+
+    const setMap = (key) => {
+      mapFrame.src = maps[key].embed;
+      mapName.textContent = maps[key].name;
+      openMapsBtn.onclick = () => window.open(maps[key].open, "_blank", "noopener,noreferrer");
+      copyLocBtn.onclick = async () => {
+        try{
+          await navigator.clipboard.writeText(maps[key].name);
+          copied.style.display = "block";
+          setTimeout(() => copied.style.display = "none", 1300);
+        }catch(e){}
+      };
+      // remember preference
+      const pref = JSON.parse(localStorage.getItem(prefKey) || "{}");
+      localStorage.setItem(prefKey, JSON.stringify({ ...pref, airport: key }));
+    };
+
+    // init map (respect preference)
+    const savedPref = JSON.parse(localStorage.getItem(prefKey) || "{}");
+    const initialAirport = savedPref.airport && maps[savedPref.airport] ? savedPref.airport : "cgh";
+    setMap(initialAirport);
+
+    document.querySelectorAll(".tab[data-map]").forEach(tab => {
+      tab.addEventListener("click", () => {
+        const key = tab.getAttribute("data-map");
+        document.querySelectorAll(".tab[data-map]").forEach(t => t.classList.remove("is-active"));
+        tab.classList.add("is-active");
+        setMap(key);
+      });
+      if (tab.getAttribute("data-map") === initialAirport) {
+        document.querySelectorAll(".tab[data-map]").forEach(t => t.classList.remove("is-active"));
+        tab.classList.add("is-active");
+      }
+    });
+
+    // Slider
+    const track = document.getElementById("track");
+    const dots = [...document.querySelectorAll(".dotBtn")];
+    let slideIndex = 0;
+    const goSlide = (i) => {
+      slideIndex = i;
+      track.style.transform = `translateX(${-100 * i}%)`;
+      dots.forEach(d => d.classList.toggle("is-on", Number(d.dataset.slide) === i));
+    };
+    dots.forEach(d => d.addEventListener("click", () => goSlide(Number(d.dataset.slide))));
+    // auto
+    setInterval(() => goSlide((slideIndex + 1) % 3), 6500);
+
+    // Legal modal
+    const legalModal = document.getElementById("legalModal");
+    const legalTitle = document.getElementById("legalTitle");
+    const legalBody = document.getElementById("legalBody");
+
+    let lastFocus = null;
+    function openLegal(type){
+      lastFocus = document.activeElement;
+      legalTitle.textContent = legalContent[type].title;
+      legalBody.innerHTML = legalContent[type].body;
+      legalModal.classList.add("is-open");
+      legalModal.setAttribute("aria-hidden","false");
+      document.body.style.overflow = "hidden";
+      const closeBtn = legalModal.querySelector("[data-close-legal]");
+      closeBtn?.focus();
+    }
+    function closeLegal(){
+      legalModal.classList.remove("is-open");
+      legalModal.setAttribute("aria-hidden","true");
+      document.body.style.overflow = "";
+      if (lastFocus) lastFocus.focus();
+    }
+    document.querySelectorAll("[data-open-privacy]").forEach(b => b.addEventListener("click", () => openLegal("privacy")));
+    document.querySelectorAll("[data-open-terms]").forEach(b => b.addEventListener("click", () => openLegal("terms")));
+    legalModal.querySelectorAll("[data-close-legal]").forEach(el => el.addEventListener("click", closeLegal));
+
+    // Flow modal (focus trap)
+    const flowModal = document.getElementById("flowModal");
+    const stepsInd = [...flowModal.querySelectorAll("[data-step-ind]")];
+    const flowBack = document.getElementById("flowBack");
+    const stepEls = [...flowModal.querySelectorAll(".flowStep")];
+    const airportsWrap = document.getElementById("airports");
+    const openPdfInline = document.getElementById("openPdfInline");
+
+    const prefHint = document.getElementById("prefHint");
+    if (!localStorage.getItem(prefKey)) prefHint.style.display = "block";
+
+    const state = { step: 1, city: null, airport: null, store: null };
+
+    function setStep(n){
+      state.step = n;
+      stepEls.forEach(el => el.style.display = (Number(el.getAttribute("data-step")) === n) ? "" : "none");
+      flowBack.style.display = n === 1 ? "none" : "";
+      stepsInd.forEach(el => el.classList.toggle("is-on", Number(el.getAttribute("data-step-ind")) <= n));
+      setTimeout(() => {
+        const current = flowModal.querySelector(`.flowStep[data-step="${n}"]`);
+        const focusable = current?.querySelector("button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])");
+        focusable?.focus();
+      }, 0);
+    }
+
+    function openFlow(){
+      lastFocus = document.activeElement;
+      flowModal.classList.add("is-open");
+      flowModal.setAttribute("aria-hidden","false");
+      document.body.style.overflow = "hidden";
+      state.step = 1; state.city = null; state.airport = null; state.store = null;
+      setStep(1);
+      trapFocus(flowModal);
+
+      // if we already know last airport, we can show it as a hint (UX)
+      const pref = JSON.parse(localStorage.getItem(prefKey) || "{}");
+      if (pref.airport && maps[pref.airport]) {
+        // no auto-skip to keep flow consistent, but you can easily auto-step if you want
+      }
+    }
+
+    function closeFlow(){
+      flowModal.classList.remove("is-open");
+      flowModal.setAttribute("aria-hidden","true");
+      document.body.style.overflow = "";
+      releaseTrap();
+      if (lastFocus) lastFocus.focus();
+    }
+
+    document.querySelectorAll("[data-open-flow]").forEach(b => b.addEventListener("click", openFlow));
+    flowModal.querySelectorAll("[data-close-modal]").forEach(el => el.addEventListener("click", closeFlow));
+
+    // Step 1
+    flowModal.querySelectorAll("[data-city]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        state.city = btn.getAttribute("data-city");
+        airportsWrap.innerHTML = "";
+        airportsByCity[state.city].forEach(a => {
+          const b = document.createElement("button");
+          b.type = "button";
+          b.className = "airportBtn";
+          b.innerHTML = `<h4>${a.title}</h4><p>${a.desc}</p>`;
+          b.addEventListener("click", () => {
+            state.airport = a.id;
+            const prev = JSON.parse(localStorage.getItem(prefKey) || "{}");
+            localStorage.setItem(prefKey, JSON.stringify({ ...prev, city: state.city, airport: state.airport }));
+            setStep(3);
+          });
+          airportsWrap.appendChild(b);
+        });
+        setStep(2);
+      });
+    });
+
+    flowBack.addEventListener("click", () => {
+      if (state.step === 2) setStep(1);
+      else if (state.step === 3) setStep(2);
+    });
+
+    // Step 3 -> open PDF, remember store
+    flowModal.querySelectorAll(".storeBtn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        state.store = btn.getAttribute("data-store");
+        const prev = JSON.parse(localStorage.getItem(prefKey) || "{}");
+        localStorage.setItem(prefKey, JSON.stringify({ ...prev, store: state.store }));
+        window.open(PDF_LINK, "_blank", "noopener,noreferrer");
+        closeFlow();
+      });
+    });
+    openPdfInline.addEventListener("click", (e) => {
+      e.preventDefault();
+      window.open(PDF_LINK, "_blank", "noopener,noreferrer");
+      closeFlow();
+    });
+
+    // Close on ESC
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        if (flowModal.classList.contains("is-open")) closeFlow();
+        if (legalModal.classList.contains("is-open")) closeLegal();
+        if (mnav.classList.contains("is-open")) setMnav(false);
+      }
+    });
+
+    // Focus trap
+    let trapHandler = null;
+    function trapFocus(modalEl){
+      const focusables = () => [...modalEl.querySelectorAll('button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])')]
+        .filter(el => !el.hasAttribute("disabled") && el.offsetParent !== null);
+
+      trapHandler = (e) => {
+        if (e.key !== "Tab") return;
+        const f = focusables();
+        if (!f.length) return;
+        const first = f[0];
+        const last = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      };
+      document.addEventListener("keydown", trapHandler);
+      const closeBtn = modalEl.querySelector("[data-close-modal], [data-close-legal]");
+      closeBtn?.focus();
+    }
+    function releaseTrap(){
+      if (trapHandler) document.removeEventListener("keydown", trapHandler);
+      trapHandler = null;
+    }
+
+    // Contact validation (mailto basic)
+    const form = document.getElementById("contactForm");
+    const note = document.getElementById("formNote");
+    form.addEventListener("submit", (e) => {
+      note.style.display = "none";
+      const name = document.getElementById("name");
+      const email = document.getElementById("email");
+      const msg = document.getElementById("message");
+      const ok = name.value.trim().length >= 2 && /.+@.+\..+/.test(email.value) && msg.value.trim().length >= 5;
+      if (!ok){
+        e.preventDefault();
+        note.style.display = "block";
+        (name.value.trim().length < 2 ? name : (/.+@.+\..+/.test(email.value) ? msg : email)).focus();
+      }
+    });
+  </script>
+</body>
+</html>
